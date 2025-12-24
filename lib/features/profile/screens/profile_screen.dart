@@ -1,9 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/profile_provider.dart';
 import '../models/user_profile.dart';
 import '../providers/settings_provider.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../auth/screens/login_screen.dart';
+import '../../../core/services/sync_service.dart';
 import 'bmi_calculator_screen.dart';
 import 'activity_history_screen.dart';
 
@@ -12,7 +16,6 @@ class ProfileScreen extends ConsumerWidget {
 
   void _showEditProfile(BuildContext context, WidgetRef ref, UserProfile profile) {
     final nameController = TextEditingController(text: profile.name);
-    final picController = TextEditingController(text: profile.profilePicture);
 
     showDialog(
       context: context,
@@ -25,10 +28,61 @@ class ProfileScreen extends ConsumerWidget {
               controller: nameController,
               decoration: const InputDecoration(labelText: 'Full Name'),
             ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: picController,
-              decoration: const InputDecoration(labelText: 'Profile Picture URL'),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    try {
+                      await ref.read(profileProvider.notifier).pickProfileImage();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('✅ Profile picture updated!')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: $e')),
+                        );
+                      }
+                    }
+                  },
+                  icon: const Icon(Icons.photo_library),
+                  label: const Text('Gallery'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+                ElevatedButton.icon(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    try {
+                      await ref.read(profileProvider.notifier).takeSelfie();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('✅ Profile picture updated!')),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: $e')),
+                        );
+                      }
+                    }
+                  },
+                  icon: const Icon(Icons.camera_alt),
+                  label: const Text('Camera'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF6366F1),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -42,7 +96,6 @@ class ProfileScreen extends ConsumerWidget {
               ref.read(profileProvider.notifier).updateProfile(
                 profile.copyWith(
                   name: nameController.text,
-                  profilePicture: picController.text,
                 ),
               );
               Navigator.pop(context);
@@ -63,6 +116,20 @@ class ProfileScreen extends ConsumerWidget {
         title: Text('Profile', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            onPressed: () async {
+              await ref.read(profileProvider.notifier).reloadProfile();
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('✅ Profile refreshed!'),
+                    duration: Duration(seconds: 1),
+                  ),
+                );
+              }
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.edit_note_rounded),
             onPressed: () => _showEditProfile(context, ref, profile),
@@ -88,11 +155,11 @@ class ProfileScreen extends ConsumerWidget {
                     child: CircleAvatar(
                       radius: 56,
                       backgroundColor: Colors.grey[900],
-                      backgroundImage: profile.profilePicture.startsWith('http') 
-                        ? NetworkImage(profile.profilePicture) 
+                      backgroundImage: profile.profilePicture.isNotEmpty && File(profile.profilePicture).existsSync()
+                        ? FileImage(File(profile.profilePicture))
                         : null,
-                      child: !profile.profilePicture.startsWith('http') 
-                        ? const Icon(Icons.person, size: 50, color: Colors.white24) 
+                      child: profile.profilePicture.isEmpty || !File(profile.profilePicture).existsSync()
+                        ? const Icon(Icons.person, size: 50, color: Colors.white24)
                         : null,
                     ),
                   ),
@@ -160,6 +227,45 @@ class ProfileScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
             _buildOption(
+              icon: Icons.sync_rounded,
+              title: '🔄 Sync Data from Cloud',
+              subtitle: 'Download all data from Firestore',
+              color: Colors.purple,
+              onTap: () async {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('🔄 Syncing data from Firestore...'),
+                    duration: Duration(seconds: 2),
+                  ),
+                );
+                
+                try {
+                  await SyncService.syncAll();
+                  
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('✅ Data synced successfully! Refresh your pages.'),
+                        backgroundColor: Colors.green,
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('❌ Sync failed: $e'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                  }
+                }
+              },
+            ),
+            const SizedBox(height: 16),
+            _buildOption(
               icon: Icons.history_rounded,
               title: 'Activity History',
               subtitle: 'View your cumulative stats',
@@ -185,7 +291,7 @@ class ProfileScreen extends ConsumerWidget {
               title: 'Logout',
               subtitle: 'Sign out of your account',
               color: const Color(0xFFF43F5E),
-              onTap: () => _showLogoutDialog(context),
+              onTap: () => _showLogoutDialog(context, ref),
             ),
             const SizedBox(height: 40),
           ],
@@ -210,13 +316,13 @@ class ProfileScreen extends ConsumerWidget {
                 SwitchListTile(
                   title: const Text('Notifications'),
                   value: settings.notificationsEnabled,
-                  activeColor: const Color(0xFF6366F1),
+                  activeTrackColor: const Color(0xFF6366F1),
                   onChanged: (v) => notifier.toggleNotifications(v),
                 ),
                 SwitchListTile(
                   title: const Text('Dark Mode'),
                   value: settings.isDarkMode,
-                  activeColor: const Color(0xFF6366F1),
+                  activeTrackColor: const Color(0xFF6366F1),
                   onChanged: (v) => notifier.toggleDarkMode(v),
                 ),
                 ListTile(
@@ -261,19 +367,40 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Logout', style: GoogleFonts.outfit(fontWeight: FontWeight.bold)),
-        content: const Text('Are you sure you want to exit FitFlow?'),
+        content: const Text('Are you sure you want to sign out of your account?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () async {
+              Navigator.pop(context);
+              try {
+                await ref.read(authNotifierProvider.notifier).signOut();
+                // Navigate to login screen
+                if (context.mounted) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                    (route) => false,
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error signing out: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              }
+            },
             style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFF43F5E)),
             child: const Text('Logout'),
           ),

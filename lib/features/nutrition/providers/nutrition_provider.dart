@@ -38,4 +38,10 @@ class MealNotifier extends StateNotifier<List<MealModel>> {
     await SyncService.deleteMeal(id);
     _loadMeals();
   }
+
+  // Force sync from Firestore
+  Future<void> syncFromFirestore() async {
+    await SyncService.syncMeals();
+    _loadMeals();
+  }
 }

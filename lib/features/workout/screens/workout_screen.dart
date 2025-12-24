@@ -20,9 +20,33 @@ class WorkoutScreen extends ConsumerWidget {
         child: Column(
           children: [
             AppBar(
-              title: const Text('Training History'),
+              title: const Text('Workout History'),
               backgroundColor: Colors.transparent,
               elevation: 0,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.sync),
+                  tooltip: 'Sync from Cloud',
+                  onPressed: () async {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Syncing workouts from cloud...'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                    await ref.read(workoutListProvider.notifier).syncFromFirestore();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('✅ Sync complete!'),
+                          backgroundColor: Colors.green,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
             Expanded(
               child: workouts.isEmpty
@@ -39,8 +63,39 @@ class WorkoutScreen extends ConsumerWidget {
                       final workout = workouts[index];
                       return Dismissible(
                         key: Key(workout.id),
+                        confirmDismiss: (direction) async {
+                          return await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Confirm Delete'),
+                                content: Text('Are you sure you want to delete "${workout.name}"?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.of(context).pop(true),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                    ),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                         onDismissed: (_) {
                           ref.read(workoutListProvider.notifier).deleteWorkout(workout.id);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('"${workout.name}" deleted successfully'),
+                              backgroundColor: Colors.green,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         },
                         background: Container(
                           margin: const EdgeInsets.only(bottom: 16),

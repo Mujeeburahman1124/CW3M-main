@@ -120,15 +120,32 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                             fat: double.tryParse(_fatController.text) ?? 0,
                             date: widget.meal?.date ?? DateTime.now(),
                           );
-                          if (widget.meal == null) {
-                            ref.read(mealListProvider.notifier).addMeal(meal);
-                          } else {
+                          
+                          final isEditing = widget.meal != null;
+                          
+                          if (isEditing) {
                             ref.read(mealListProvider.notifier).updateMeal(meal);
+                          } else {
+                            ref.read(mealListProvider.notifier).addMeal(meal);
                           }
+                          
                           Navigator.pop(context);
+                          
+                          // Show success message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                isEditing 
+                                  ? '✅ Meal updated successfully!' 
+                                  : '✅ Meal saved successfully!',
+                              ),
+                              backgroundColor: Colors.green,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         }
                       },
-                      child: const Text('Save Meal'),
+                      child: Text(widget.meal == null ? 'Save Meal' : 'Update Meal'),
                     ),
                   ],
                 ),

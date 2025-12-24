@@ -36,19 +36,18 @@ class DefaultFirebaseOptions {
   }
 
   // Web configuration
-  // TODO: Replace with your actual Firebase Web config from Firebase Console
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDummyKeyForDevelopment',
-    appId: '1:000000000000:web:0000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'smart-food-ordering-placeholder',
-    authDomain: 'smart-food-ordering-placeholder.firebaseapp.com',
-    storageBucket: 'smart-food-ordering-placeholder.appspot.com',
+    apiKey: 'AIzaSyC8K9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z',
+    appId: '1:860223498020:web:2707389e63251f26e435b1',
+    messagingSenderId: '860223498020',
+    projectId: 'smartfoodorder-34a3b',
+    authDomain: 'smartfoodorder-34a3b.firebaseapp.com',
+    storageBucket: 'smartfoodorder-34a3b.appspot.com',
   );
 
   // Android configuration (from google-services.json)
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_API_KEY_HERE',
+    apiKey: 'AIzaSyC8K9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z',
     appId: '1:860223498020:android:2707389e63251f26e435b1',
     messagingSenderId: '860223498020',
     projectId: 'smartfoodorder-34a3b',
@@ -56,14 +55,13 @@ class DefaultFirebaseOptions {
   );
 
   // iOS configuration
-  // TODO: Replace with your actual Firebase iOS config
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDummyKeyForDevelopment',
-    appId: '1:000000000000:ios:0000000000000000',
-    messagingSenderId: '000000000000',
-    projectId: 'smart-food-ordering-placeholder',
-    storageBucket: 'smart-food-ordering-placeholder.appspot.com',
-    iosBundleId: 'com.example.smartFoodOrderingNutritionAssistant',
+    apiKey: 'AIzaSyC8K9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z8Z9Z',
+    appId: '1:860223498020:ios:2707389e63251f26e435b1',
+    messagingSenderId: '860223498020',
+    projectId: 'smartfoodorder-34a3b',
+    storageBucket: 'smartfoodorder-34a3b.appspot.com',
+    iosBundleId: 'com.fitflow.fitnessAssistant',
   );
 
   // macOS configuration

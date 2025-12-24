@@ -10,7 +10,6 @@ import '../../nutrition/screens/nutrition_screen.dart';
 import 'progress_screen.dart';
 import '../../profile/screens/profile_screen.dart';
 import '../../workout/providers/workout_provider.dart';
-import '../../nutrition/providers/nutrition_provider.dart';
 import '../../profile/providers/profile_provider.dart';
 import 'package:fitflow_fitness_assistant/core/utils/app_theme.dart';
 import '../providers/stats_provider.dart';
@@ -63,11 +62,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           showUnselectedLabels: false,
           elevation: 0,
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.dashboard_rounded), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.fitness_center_rounded), label: 'Training'),
-            BottomNavigationBarItem(icon: Icon(Icons.restaurant_rounded), label: 'Nutrition'),
-            BottomNavigationBarItem(icon: Icon(Icons.bar_chart_rounded), label: 'Stats'),
-            BottomNavigationBarItem(icon: Icon(Icons.person_outline_rounded), label: 'Profile'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.dashboard_rounded), label: 'Home'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.fitness_center_rounded), label: 'Training'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.restaurant_rounded), label: 'Nutrition'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.bar_chart_rounded), label: 'Stats'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline_rounded), label: 'Profile'),
           ],
         ),
       ),
@@ -81,15 +85,15 @@ class DashboardContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final workouts = ref.watch(workoutListProvider);
-    final meals = ref.watch(mealListProvider);
     final streakDays = ref.watch(streakProvider);
 
-    final totalCaloriesBurned = workouts.fold(0, (sum, w) => sum + w.caloriesBurned);
+    final totalCaloriesBurned =
+        workouts.fold(0, (sum, w) => sum + w.caloriesBurned);
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final primaryTextColor = isDark ? Colors.white : AppTheme.lightTextColor;
-    final secondaryTextColor = isDark ? Colors.white70 : (Colors.grey[700] ?? Colors.grey);
-    final tertiaryTextColor = isDark ? Colors.white38 : (Colors.grey[500] ?? Colors.grey);
+    final tertiaryTextColor =
+        isDark ? Colors.white38 : (Colors.grey[500] ?? Colors.grey);
 
     return Scaffold(
       body: Container(
@@ -111,7 +115,8 @@ class DashboardContent extends ConsumerWidget {
                       color: const Color(0xFF6366F1).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(Icons.bolt_rounded, color: Color(0xFF6366F1)),
+                    child: const Icon(Icons.bolt_rounded,
+                        color: Color(0xFF6366F1)),
                   ),
                   const SizedBox(width: 12),
                   Text(
@@ -126,15 +131,18 @@ class DashboardContent extends ConsumerWidget {
               ),
               actions: [
                 IconButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _showNotificationsBottomSheet(context, isDark);
+                  },
                   icon: Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05),
+                      color: (isDark ? Colors.white : Colors.black)
+                          .withValues(alpha: 0.05),
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
-                      Icons.notifications_none_rounded, 
+                      Icons.notifications_none_rounded,
                       size: 20,
                       color: primaryTextColor,
                     ),
@@ -178,61 +186,64 @@ class DashboardContent extends ConsumerWidget {
                       ),
                     ],
                   ),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomProgressCard(
-                        title: 'Workouts',
-                        value: workouts.length.toString(),
-                        subtitle: 'Sept',
-                        icon: Icons.fitness_center_rounded,
-                        color: const Color(0xFF6366F1),
-                        progress: (workouts.length / 5).clamp(0.0, 1.0),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: CustomProgressCard(
+                          title: 'Workouts',
+                          value: workouts.length.toString(),
+                          subtitle: 'Sept',
+                          icon: Icons.fitness_center_rounded,
+                          color: const Color(0xFF6366F1),
+                          progress: (workouts.length / 5).clamp(0.0, 1.0),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: CustomProgressCard(
-                        title: 'Burned',
-                        value: totalCaloriesBurned.toString(),
-                        subtitle: 'kcal',
-                        icon: Icons.local_fire_department_rounded,
-                        color: const Color(0xFFF43F5E),
-                        progress: (totalCaloriesBurned / 2000).clamp(0.0, 1.0),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: CustomProgressCard(
+                          title: 'Burned',
+                          value: totalCaloriesBurned.toString(),
+                          subtitle: 'kcal',
+                          icon: Icons.local_fire_department_rounded,
+                          color: const Color(0xFFF43F5E),
+                          progress:
+                              (totalCaloriesBurned / 2000).clamp(0.0, 1.0),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                const WaterTrackerWidget(),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Recent Activity',
-                      style: GoogleFonts.outfit(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: primaryTextColor,
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const WaterTrackerWidget(),
+                  const SizedBox(height: 32),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Recent Activity',
+                        style: GoogleFonts.outfit(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: primaryTextColor,
+                        ),
                       ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: tertiaryTextColor),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                if (workouts.isEmpty)
-                  _buildEmptyActivity(isDark, tertiaryTextColor)
-                else
-                  ...workouts.take(3).map((w) => _buildActivityTile(w, isDark, primaryTextColor, tertiaryTextColor)),
-                const SizedBox(height: 40),
-              ]),
+                      IconButton(
+                        icon: Icon(Icons.arrow_forward_ios_rounded,
+                            size: 16, color: tertiaryTextColor),
+                        onPressed: () {},
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  if (workouts.isEmpty)
+                    _buildEmptyActivity(isDark, tertiaryTextColor)
+                  else
+                    ...workouts.take(3).map((w) => _buildActivityTile(
+                        w, isDark, primaryTextColor, tertiaryTextColor)),
+                  const SizedBox(height: 40),
+                ]),
+              ),
             ),
-          ),
           ],
         ),
       ),
@@ -245,7 +256,9 @@ class DashboardContent extends ConsumerWidget {
       decoration: BoxDecoration(
         color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.02),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05)),
+        border: Border.all(
+            color:
+                (isDark ? Colors.white : Colors.black).withValues(alpha: 0.05)),
       ),
       child: Column(
         children: [
@@ -260,19 +273,22 @@ class DashboardContent extends ConsumerWidget {
     );
   }
 
-  Widget _buildActivityTile(dynamic w, bool isDark, Color primaryTextColor, Color tertiaryTextColor) {
+  Widget _buildActivityTile(
+      dynamic w, bool isDark, Color primaryTextColor, Color tertiaryTextColor) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: isDark ? const Color(0xFF1E293B) : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: isDark ? [] : [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -282,7 +298,8 @@ class DashboardContent extends ConsumerWidget {
             color: const Color(0xFF6366F1).withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
-          child: const Icon(Icons.fitness_center_rounded, color: Color(0xFF6366F1), size: 20),
+          child: const Icon(Icons.fitness_center_rounded,
+              color: Color(0xFF6366F1), size: 20),
         ),
         title: Text(
           w.name,
@@ -319,4 +336,180 @@ class DashboardContent extends ConsumerWidget {
       ),
     );
   }
+}
+
+void _showNotificationsBottomSheet(BuildContext context, bool isDark) {
+  showModalBottomSheet(
+    context: context,
+    backgroundColor: Colors.transparent,
+    isScrollControlled: true,
+    builder: (context) => Container(
+      height: MediaQuery.of(context).size.height * 0.7,
+      decoration: BoxDecoration(
+        color: isDark ? const Color(0xFF1E293B) : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Column(
+        children: [
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 12, bottom: 8),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: isDark ? Colors.white24 : Colors.grey[300],
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+          // Header
+          Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Notifications',
+                  style: GoogleFonts.outfit(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : AppTheme.lightTextColor,
+                  ),
+                ),
+                IconButton(
+                  onPressed: () => Navigator.pop(context),
+                  icon: Icon(
+                    Icons.close_rounded,
+                    color: isDark ? Colors.white : AppTheme.lightTextColor,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Notifications list
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              children: [
+                _buildNotificationItem(
+                  context,
+                  isDark,
+                  icon: Icons.fitness_center_rounded,
+                  iconColor: const Color(0xFF6366F1),
+                  title: 'Time to Exercise!',
+                  message: 'You haven\'t worked out today. Let\'s get moving!',
+                  time: '2 hours ago',
+                ),
+                _buildNotificationItem(
+                  context,
+                  isDark,
+                  icon: Icons.local_fire_department_rounded,
+                  iconColor: const Color(0xFFF43F5E),
+                  title: 'Streak Alert! 🔥',
+                  message: 'You\'re on a ${3}-day streak. Keep it going!',
+                  time: '5 hours ago',
+                ),
+                _buildNotificationItem(
+                  context,
+                  isDark,
+                  icon: Icons.restaurant_rounded,
+                  iconColor: const Color(0xFF10B981),
+                  title: 'Meal Reminder',
+                  message: 'Don\'t forget to log your dinner!',
+                  time: '6 hours ago',
+                ),
+                _buildNotificationItem(
+                  context,
+                  isDark,
+                  icon: Icons.emoji_events_rounded,
+                  iconColor: const Color(0xFFFBBF24),
+                  title: 'Achievement Unlocked!',
+                  message: 'You\'ve completed 10 workouts this month!',
+                  time: '1 day ago',
+                ),
+                _buildNotificationItem(
+                  context,
+                  isDark,
+                  icon: Icons.water_drop_rounded,
+                  iconColor: const Color(0xFF06B6D4),
+                  title: 'Stay Hydrated',
+                  message:
+                      'You\'ve only logged 4 glasses today. Drink more water!',
+                  time: '1 day ago',
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildNotificationItem(
+  BuildContext context,
+  bool isDark, {
+  required IconData icon,
+  required Color iconColor,
+  required String title,
+  required String message,
+  required String time,
+}) {
+  return Container(
+    margin: const EdgeInsets.only(bottom: 12),
+    padding: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: isDark ? const Color(0xFF0F172A) : Colors.grey[50],
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.grey.withValues(alpha: 0.1),
+      ),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: iconColor.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: iconColor, size: 24),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                  color: isDark ? Colors.white : AppTheme.lightTextColor,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                message,
+                style: GoogleFonts.outfit(
+                  fontSize: 14,
+                  color: isDark ? Colors.white60 : Colors.grey[600],
+                ),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                time,
+                style: GoogleFonts.outfit(
+                  fontSize: 12,
+                  color: isDark ? Colors.white38 : Colors.grey[400],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
 }

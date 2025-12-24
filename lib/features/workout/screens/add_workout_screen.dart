@@ -97,7 +97,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _category,
+                      initialValue: _category,
                       decoration: const InputDecoration(labelText: 'Category'),
                       dropdownColor: isDark ? AppTheme.surfaceColor : Colors.white,
                       items: ['Strength', 'Cardio', 'Flexibility', 'HIIT', 'Yoga']

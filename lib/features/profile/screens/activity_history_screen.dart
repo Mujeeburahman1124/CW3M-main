@@ -6,7 +6,7 @@ import 'package:fitflow_fitness_assistant/core/utils/app_theme.dart';
 import '../../workout/providers/workout_provider.dart';
 import '../../workout/models/workout_model.dart';
 import '../../nutrition/providers/nutrition_provider.dart';
-import '../../nutrition/models/meal_model.dart';
+
 
 class ActivityHistoryScreen extends ConsumerWidget {
   const ActivityHistoryScreen({super.key});

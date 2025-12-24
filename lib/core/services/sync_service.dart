@@ -11,48 +11,65 @@ class SyncService {
   static Future<void> syncAll() async {
     final connectivity = await Connectivity().checkConnectivity();
     if (connectivity == ConnectivityResult.none) {
-      log("No connectivity, skipping sync");
+      log("⚠️ No connectivity, skipping sync");
       return;
     }
 
-    log("Connectivity detected, starting sync...");
+    log("🔄 Connectivity detected, starting sync...");
     await syncWorkouts();
     await syncMeals();
+    log("✅ Sync completed successfully!");
   }
 
   static Future<void> syncWorkouts() async {
     try {
+      log("📥 Syncing workouts from Firestore...");
       final box = Hive.box<WorkoutModel>('workoutsBox');
+      
+      // Clear local data first to avoid duplicates
+      await box.clear();
       
       // Pull from Firestore
       final snapshot = await _firestore.collection('workouts').get();
-      log("Fetched ${snapshot.docs.length} workouts from Firestore");
+      log("📊 Fetched ${snapshot.docs.length} workouts from Firestore");
 
       for (var doc in snapshot.docs) {
-        final workout = WorkoutModel.fromJson(doc.data());
-        await box.put(workout.id, workout);
+        try {
+          final workout = WorkoutModel.fromJson(doc.data());
+          await box.put(workout.id, workout);
+        } catch (e) {
+          log("⚠️ Error parsing workout ${doc.id}: $e");
+        }
       }
-      log("Workouts synced to local storage");
+      log("✅ ${box.length} workouts synced to local storage");
     } catch (e) {
-      log("Error syncing workouts: $e");
+      log("❌ Error syncing workouts: $e");
     }
   }
 
   static Future<void> syncMeals() async {
     try {
+      log("📥 Syncing meals from Firestore...");
       final box = Hive.box<MealModel>('mealsBox');
+      
+      // Clear local data first to avoid duplicates
+      await box.clear();
       
       // Pull from Firestore
       final snapshot = await _firestore.collection('meals').get();
-      log("Fetched ${snapshot.docs.length} meals from Firestore");
+      log("📊 Fetched ${snapshot.docs.length} meals from Firestore");
 
       for (var doc in snapshot.docs) {
-        final meal = MealModel.fromJson(doc.data());
-        await box.put(meal.id, meal);
+        try {
+          final meal = MealModel.fromJson(doc.data());
+          await box.put(meal.id, meal);
+        } catch (e) {
+          log("⚠️ Error parsing meal ${doc.id}: $e");
+        }
       }
-      log("Meals synced to local storage");
+      log("✅ ${box.length} meals synced to local storage");
     } catch (e) {
-      log("Error syncing meals: $e");
+      log("❌ Error syncing meals: $e");
     }
   }
 

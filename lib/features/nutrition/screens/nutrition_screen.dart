@@ -23,6 +23,30 @@ class NutritionScreen extends ConsumerWidget {
               title: const Text('Nutrition Tracker'),
               backgroundColor: Colors.transparent,
               elevation: 0,
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.sync),
+                  tooltip: 'Sync from Cloud',
+                  onPressed: () async {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Syncing meals from cloud...'),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                    await ref.read(mealListProvider.notifier).syncFromFirestore();
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('✅ Sync complete!'),
+                          backgroundColor: Colors.green,
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
             Expanded(
               child: meals.isEmpty
@@ -39,8 +63,39 @@ class NutritionScreen extends ConsumerWidget {
                       final meal = meals[index];
                       return Dismissible(
                         key: Key(meal.id),
+                        confirmDismiss: (direction) async {
+                          return await showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('Confirm Delete'),
+                                content: Text('Are you sure you want to delete "${meal.name}"?'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(false),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.of(context).pop(true),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.red,
+                                    ),
+                                    child: const Text('Delete'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        },
                         onDismissed: (_) {
                           ref.read(mealListProvider.notifier).deleteMeal(meal.id);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('"${meal.name}" deleted successfully'),
+                              backgroundColor: Colors.green,
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
                         },
                         background: Container(
                           margin: const EdgeInsets.only(bottom: 16),

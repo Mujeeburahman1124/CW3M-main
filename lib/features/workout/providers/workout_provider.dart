@@ -38,4 +38,10 @@ class WorkoutNotifier extends StateNotifier<List<WorkoutModel>> {
     await SyncService.deleteWorkout(id);
     _loadWorkouts();
   }
+
+  // Force sync from Firestore
+  Future<void> syncFromFirestore() async {
+    await SyncService.syncWorkouts();
+    _loadWorkouts();
+  }
 }

@@ -6,6 +6,28 @@ import '../../features/nutrition/models/meal_model.dart';
 class DataSeeder {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Initialize Firestore collections structure
+  static Future<void> initializeCollections() async {
+    try {
+      log('🔧 Initializing Firestore collections...');
+      
+      // Check if collections already exist by checking document count
+      final usersCheck = await _firestore.collection('users').limit(1).get();
+      final workoutsCheck = await _firestore.collection('workouts').limit(1).get();
+      final mealsCheck = await _firestore.collection('meals').limit(1).get();
+      
+      if (usersCheck.docs.isEmpty && workoutsCheck.docs.isEmpty && mealsCheck.docs.isEmpty) {
+        log('📊 Collections are empty. Seeding sample data...');
+        await seedData();
+      } else {
+        log('✅ Collections already initialized. Skipping seed.');
+      }
+    } catch (e) {
+      log('⚠️ Error checking collections: $e');
+      log('💡 This is normal if Firestore is not configured yet');
+    }
+  }
+
   static Future<void> seedData() async {
     try {
       log('Starting health & fitness data seeding...');
