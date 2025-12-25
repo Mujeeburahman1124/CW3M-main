@@ -9,7 +9,7 @@ class DataSeeder {
   /// Initialize Firestore collections structure
   static Future<void> initializeCollections() async {
     try {
-      log('🔧 Initializing Firestore collections...');
+      log(' Initializing Firestore collections...');
       
       // Check if collections already exist by checking document count
       final usersCheck = await _firestore.collection('users').limit(1).get();

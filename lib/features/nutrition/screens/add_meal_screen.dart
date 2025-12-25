@@ -145,8 +145,8 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                             SnackBar(
                               content: Text(
                                 isEditing 
-                                  ? '✅ Meal updated successfully!' 
-                                  : '✅ Meal saved successfully!',
+                                  ? ' Meal updated successfully!'
+                                  : ' Meal saved successfully!',
                               ),
                               backgroundColor: Colors.green,
                               duration: const Duration(seconds: 2),

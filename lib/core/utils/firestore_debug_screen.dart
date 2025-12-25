@@ -35,14 +35,14 @@ class _FirestoreDebugScreenState extends State<FirestoreDebugScreen> {
           .set(testUser);
 
       setState(() {
-        _status = '✅ SUCCESS! User created in Firestore.\nCheck Firebase Console → users collection';
+        _status = ' SUCCESS! User created in Firestore.\nCheck Firebase Console → users collection';
         _isLoading = false;
       });
 
       log('Test user created successfully: ${testUser['uid']}');
     } catch (e) {
       setState(() {
-        _status = '❌ ERROR: $e\n\nPossible issues:\n'
+        _status = ' ERROR: $e\n\nPossible issues:\n'
             '1. Firestore rules blocking writes\n'
             '2. API key not configured\n'
             '3. Internet connection issue';
@@ -64,7 +64,7 @@ class _FirestoreDebugScreenState extends State<FirestoreDebugScreen> {
 
       if (snapshot.docs.isEmpty) {
         setState(() {
-          _status = '⚠️ Users collection exists but is empty.\n'
+          _status = ' Users collection exists but is empty.\n'
               'Try creating a test user first.';
           _isLoading = false;
         });
@@ -77,7 +77,7 @@ class _FirestoreDebugScreenState extends State<FirestoreDebugScreen> {
             .join('\n');
 
         setState(() {
-          _status = '✅ Found ${snapshot.docs.length} users:\n\n$usersList';
+          _status = ' Found ${snapshot.docs.length} users:\n\n$usersList';
           _isLoading = false;
         });
       }
@@ -85,7 +85,7 @@ class _FirestoreDebugScreenState extends State<FirestoreDebugScreen> {
       log('Read ${snapshot.docs.length} users from Firestore');
     } catch (e) {
       setState(() {
-        _status = '❌ ERROR reading users: $e';
+        _status = ' ERROR reading users: $e';
         _isLoading = false;
       });
 

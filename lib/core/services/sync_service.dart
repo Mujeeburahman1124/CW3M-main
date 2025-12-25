@@ -13,25 +13,25 @@ class SyncService {
   static Future<void> syncAll() async {
     final connectivity = await Connectivity().checkConnectivity();
     if (connectivity == ConnectivityResult.none) {
-      log("⚠️ No connectivity, skipping sync");
+      log(" No connectivity, skipping sync");
       return;
     }
 
     log("🔄 Connectivity detected, starting sync...");
     await syncWorkouts();
     await syncMeals();
-    log("✅ Sync completed successfully!");
+    log("Sync completed successfully!");
   }
 
   static Future<void> syncWorkouts() async {
     try {
       final currentUser = _auth.currentUser;
       if (currentUser == null) {
-        log("⚠️ No user logged in, skipping workout sync");
+        log("No user logged in, skipping workout sync");
         return;
       }
 
-      log("📥 Syncing workouts from Firestore for user: ${currentUser.uid}");
+      log(" Syncing workouts from Firestore for user: ${currentUser.uid}");
       final box = Hive.box<WorkoutModel>('workoutsBox');
       
       // Clear local data first to avoid duplicates
@@ -42,19 +42,19 @@ class SyncService {
           .collection('workouts')
           .where('userId', isEqualTo: currentUser.uid)
           .get();
-      log("📊 Fetched ${snapshot.docs.length} workouts from Firestore");
+      log(" Fetched ${snapshot.docs.length} workouts from Firestore");
 
       for (var doc in snapshot.docs) {
         try {
           final workout = WorkoutModel.fromJson(doc.data());
           await box.put(workout.id, workout);
         } catch (e) {
-          log("⚠️ Error parsing workout ${doc.id}: $e");
+          log(" Error parsing workout ${doc.id}: $e");
         }
       }
-      log("✅ ${box.length} workouts synced to local storage");
+      log(" ${box.length} workouts synced to local storage");
     } catch (e) {
-      log("❌ Error syncing workouts: $e");
+      log(" Error syncing workouts: $e");
     }
   }
 
@@ -62,11 +62,11 @@ class SyncService {
     try {
       final currentUser = _auth.currentUser;
       if (currentUser == null) {
-        log("⚠️ No user logged in, skipping meal sync");
+        log(" No user logged in, skipping meal sync");
         return;
       }
 
-      log("📥 Syncing meals from Firestore for user: ${currentUser.uid}");
+      log(" Syncing meals from Firestore for user: ${currentUser.uid}");
       final box = Hive.box<MealModel>('mealsBox');
       
       // Clear local data first to avoid duplicates
@@ -77,19 +77,19 @@ class SyncService {
           .collection('meals')
           .where('userId', isEqualTo: currentUser.uid)
           .get();
-      log("📊 Fetched ${snapshot.docs.length} meals from Firestore");
+      log(" Fetched ${snapshot.docs.length} meals from Firestore");
 
       for (var doc in snapshot.docs) {
         try {
           final meal = MealModel.fromJson(doc.data());
           await box.put(meal.id, meal);
         } catch (e) {
-          log("⚠️ Error parsing meal ${doc.id}: $e");
+          log(" Error parsing meal ${doc.id}: $e");
         }
       }
-      log("✅ ${box.length} meals synced to local storage");
+      log(" ${box.length} meals synced to local storage");
     } catch (e) {
-      log("❌ Error syncing meals: $e");
+      log(" Error syncing meals: $e");
     }
   }
 

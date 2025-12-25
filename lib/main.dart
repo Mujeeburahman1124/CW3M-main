@@ -23,17 +23,17 @@ void main() async {
     await Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
     );
-    log("✅ Firebase initialized successfully");
+    log(" Firebase initialized successfully");
 
     // Initialize Firestore collections and seed data if needed
     await DataSeeder.initializeCollections();
     
     // Sync data from Firestore to Hive
     await SyncService.syncAll();
-    log("✅ Data sync completed");
+    log(" Data sync completed");
   } catch (e) {
-    log("⚠️ Firebase initialization/sync failed: $e");
-    log("💡 App will continue with local storage only");
+    log(" Firebase initialization/sync failed: $e");
+    log(" App will continue with local storage only");
     // App will continue but Firebase sync won't work
   }
 
