@@ -25,6 +25,9 @@ class MealModel extends HiveObject {
   @HiveField(6)
   final DateTime date;
 
+  @HiveField(7)
+  final String userId;
+
   MealModel({
     required this.id,
     required this.name,
@@ -33,6 +36,7 @@ class MealModel extends HiveObject {
     required this.carbs,
     required this.fat,
     required this.date,
+    required this.userId,
   });
 
   Map<String, dynamic> toJson() {
@@ -44,6 +48,7 @@ class MealModel extends HiveObject {
       'carbs': carbs,
       'fat': fat,
       'date': date.toIso8601String(),
+      'userId': userId,
     };
   }
 
@@ -56,6 +61,7 @@ class MealModel extends HiveObject {
       carbs: (json['carbs'] as num).toDouble(),
       fat: (json['fat'] as num).toDouble(),
       date: DateTime.parse(json['date']),
+      userId: json['userId'] ?? '',
     );
   }
 
@@ -66,6 +72,7 @@ class MealModel extends HiveObject {
     double? carbs,
     double? fat,
     DateTime? date,
+    String? userId,
   }) {
     return MealModel(
       id: id,
@@ -75,6 +82,7 @@ class MealModel extends HiveObject {
       carbs: carbs ?? this.carbs,
       fat: fat ?? this.fat,
       date: date ?? this.date,
+      userId: userId ?? this.userId,
     );
   }
 }

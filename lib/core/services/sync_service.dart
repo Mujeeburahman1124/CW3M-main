@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:hive/hive.dart';
 import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../features/workout/models/workout_model.dart';
 import '../../features/nutrition/models/meal_model.dart';
 
 class SyncService {
   static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  static final FirebaseAuth _auth = FirebaseAuth.instance;
 
   static Future<void> syncAll() async {
     final connectivity = await Connectivity().checkConnectivity();
@@ -23,14 +25,23 @@ class SyncService {
 
   static Future<void> syncWorkouts() async {
     try {
-      log("📥 Syncing workouts from Firestore...");
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        log("⚠️ No user logged in, skipping workout sync");
+        return;
+      }
+
+      log("📥 Syncing workouts from Firestore for user: ${currentUser.uid}");
       final box = Hive.box<WorkoutModel>('workoutsBox');
       
       // Clear local data first to avoid duplicates
       await box.clear();
       
-      // Pull from Firestore
-      final snapshot = await _firestore.collection('workouts').get();
+      // Pull from Firestore - ONLY current user's data
+      final snapshot = await _firestore
+          .collection('workouts')
+          .where('userId', isEqualTo: currentUser.uid)
+          .get();
       log("📊 Fetched ${snapshot.docs.length} workouts from Firestore");
 
       for (var doc in snapshot.docs) {
@@ -49,14 +60,23 @@ class SyncService {
 
   static Future<void> syncMeals() async {
     try {
-      log("📥 Syncing meals from Firestore...");
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        log("⚠️ No user logged in, skipping meal sync");
+        return;
+      }
+
+      log("📥 Syncing meals from Firestore for user: ${currentUser.uid}");
       final box = Hive.box<MealModel>('mealsBox');
       
       // Clear local data first to avoid duplicates
       await box.clear();
       
-      // Pull from Firestore
-      final snapshot = await _firestore.collection('meals').get();
+      // Pull from Firestore - ONLY current user's data
+      final snapshot = await _firestore
+          .collection('meals')
+          .where('userId', isEqualTo: currentUser.uid)
+          .get();
       log("📊 Fetched ${snapshot.docs.length} meals from Firestore");
 
       for (var doc in snapshot.docs) {

@@ -17,14 +17,14 @@ class DataSeeder {
       final mealsCheck = await _firestore.collection('meals').limit(1).get();
       
       if (usersCheck.docs.isEmpty && workoutsCheck.docs.isEmpty && mealsCheck.docs.isEmpty) {
-        log('📊 Collections are empty. Seeding sample data...');
+        log(' Collections are empty. Seeding sample data...');
         await seedData();
       } else {
-        log('✅ Collections already initialized. Skipping seed.');
+        log(' Collections already initialized. Skipping seed.');
       }
     } catch (e) {
-      log('⚠️ Error checking collections: $e');
-      log('💡 This is normal if Firestore is not configured yet');
+      log(' Error checking collections: $e');
+      log(' This is normal if Firestore is not configured yet');
     }
   }
 
@@ -39,6 +39,7 @@ class DataSeeder {
       final workouts = List.generate(10, (i) {
         return WorkoutModel(
           id: 'w_seed_$i',
+          userId: 'seed_user',
           name: i % 2 == 0 ? 'HIIT Session' : 'Weight Training',
           description: 'Seeded activity for chart visualization.',
           durationMinutes: 30 + (i * 5),
@@ -57,6 +58,7 @@ class DataSeeder {
       final meals = List.generate(10, (i) {
         return MealModel(
           id: 'm_seed_$i',
+          userId: 'seed_user',
           name: i % 2 == 0 ? 'Healthy Salad' : 'Protein Bowl',
           calories: 300 + (i * 30),
           protein: 20 + (i * 2),

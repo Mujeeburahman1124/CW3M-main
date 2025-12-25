@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../models/meal_model.dart';
 import '../providers/nutrition_provider.dart';
-
+import '../../auth/providers/auth_provider.dart';
 import '../../../core/utils/app_theme.dart';
 
 class AddMealScreen extends ConsumerStatefulWidget {
@@ -111,6 +111,14 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          final currentUser = ref.read(authStateProvider).value;
+                          if (currentUser == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('⚠️ Please login first')),
+                            );
+                            return;
+                          }
+
                           final meal = MealModel(
                             id: widget.meal?.id ?? const Uuid().v4(),
                             name: _nameController.text,
@@ -119,6 +127,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                             carbs: double.tryParse(_carbsController.text) ?? 0,
                             fat: double.tryParse(_fatController.text) ?? 0,
                             date: widget.meal?.date ?? DateTime.now(),
+                            userId: currentUser.uid,
                           );
                           
                           final isEditing = widget.meal != null;

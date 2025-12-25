@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import '../models/workout_model.dart';
 import '../providers/workout_provider.dart';
-
+import '../../auth/providers/auth_provider.dart';
 import '../../../core/utils/app_theme.dart';
 
 class AddWorkoutScreen extends ConsumerStatefulWidget {
@@ -109,6 +109,14 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                     ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
+                          final currentUser = ref.read(authStateProvider).value;
+                          if (currentUser == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('⚠️ Please login first')),
+                            );
+                            return;
+                          }
+
                           final workout = WorkoutModel(
                             id: widget.workout?.id ?? const Uuid().v4(),
                             name: _nameController.text,
@@ -117,6 +125,7 @@ class _AddWorkoutScreenState extends ConsumerState<AddWorkoutScreen> {
                             caloriesBurned: int.tryParse(_caloriesController.text) ?? 0,
                             category: _category,
                             date: widget.workout?.date ?? DateTime.now(),
+                            userId: currentUser.uid,
                           );
                           if (widget.workout == null) {
                             ref.read(workoutListProvider.notifier).addWorkout(workout);

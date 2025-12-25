@@ -25,6 +25,9 @@ class WorkoutModel extends HiveObject {
   @HiveField(6)
   final DateTime date;
 
+  @HiveField(7)
+  final String userId;
+
   WorkoutModel({
     required this.id,
     required this.name,
@@ -33,6 +36,7 @@ class WorkoutModel extends HiveObject {
     required this.category,
     required this.caloriesBurned,
     required this.date,
+    required this.userId,
   });
 
   Map<String, dynamic> toJson() {
@@ -44,6 +48,7 @@ class WorkoutModel extends HiveObject {
       'category': category,
       'caloriesBurned': caloriesBurned,
       'date': date.toIso8601String(),
+      'userId': userId,
     };
   }
 
@@ -56,6 +61,7 @@ class WorkoutModel extends HiveObject {
       category: json['category'],
       caloriesBurned: (json['caloriesBurned'] as num).toInt(),
       date: DateTime.parse(json['date']),
+      userId: json['userId'] ?? '',
     );
   }
 
@@ -66,6 +72,7 @@ class WorkoutModel extends HiveObject {
     String? category,
     int? caloriesBurned,
     DateTime? date,
+    String? userId,
   }) {
     return WorkoutModel(
       id: id,
@@ -75,6 +82,7 @@ class WorkoutModel extends HiveObject {
       category: category ?? this.category,
       caloriesBurned: caloriesBurned ?? this.caloriesBurned,
       date: date ?? this.date,
+      userId: userId ?? this.userId,
     );
   }
 }

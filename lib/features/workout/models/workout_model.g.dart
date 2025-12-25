@@ -24,13 +24,14 @@ class WorkoutModelAdapter extends TypeAdapter<WorkoutModel> {
       category: fields[4] as String,
       caloriesBurned: fields[5] as int,
       date: fields[6] as DateTime,
+      userId: fields[7] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, WorkoutModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class WorkoutModelAdapter extends TypeAdapter<WorkoutModel> {
       ..writeByte(5)
       ..write(obj.caloriesBurned)
       ..writeByte(6)
-      ..write(obj.date);
+      ..write(obj.date)
+      ..writeByte(7)
+      ..write(obj.userId);
   }
 
   @override
