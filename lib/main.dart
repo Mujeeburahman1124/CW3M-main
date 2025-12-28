@@ -33,7 +33,7 @@ void main() async {
     log(" Data sync completed");
   } catch (e) {
     log(" Firebase initialization/sync failed: $e");
-    log(" App will continue with local storage only");
+    log("t App will continue with local storage only");
     // App will continue but Firebase sync won't work
   }
 
