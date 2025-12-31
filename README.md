@@ -35,8 +35,8 @@ Follow these steps to get the project running on your local machine.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/yourusername/fitflow.git
-   cd fitflow
+   git clone https://github.com/yourusername/CW3M-main.git
+   cd CW3M-main
    ```
 
 2. **Install dependencies:**
@@ -44,19 +44,43 @@ Follow these steps to get the project running on your local machine.
    flutter pub get
    ```
 
-3. **Firebase Configuration:**
-   - Ensure you have the `firebase_options.dart` file configured for your project.
-   - You may need to use `flutterfire configure` if you are setting up a fresh Firebase project.
+3. **Firebase Setup** (Required):
+   
+   a. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
+   
+   b. Add an Android app with package name: `com.example.cw3m`
+   
+   c. Download `google-services.json` from Firebase Console
+   
+   d. Rename the template file:
+   ```bash
+   cp android/app/google-services.json.template android/app/google-services.json
+   ```
+   
+   e. Replace the content with your downloaded `google-services.json`
+   
+   f. Enable Firestore Database and Authentication in Firebase Console
 
-4. **Generate Code (Hive Adapters, etc.):**
+4. **Configure Firestore:**
+   - Go to Firestore Database in Firebase Console
+   - Create database in production mode
+   - Set up security rules (see `firestore.rules`)
+
+5. **Generate Code (Hive Adapters, etc.):**
    ```bash
    dart run build_runner build
    ```
 
-5. **Run the app:**
+6. **Run the app:**
    ```bash
    flutter run
    ```
+
+### 🔒 Important Security Notes
+
+- **Never commit** `google-services.json` or `firebase_options.dart` with real API keys
+- The `google-services.json` is in `.gitignore` to prevent accidental commits
+- Use the provided template file to set up your own Firebase configuration
 
 ## 📁 Project Structure
 

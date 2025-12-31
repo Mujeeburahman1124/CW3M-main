@@ -47,3 +47,11 @@ app.*.map.json
 # Firebase configuration files (contain sensitive API keys)
 **/google-services.json
 google-services.json
+
+# Temporary analysis and debug files
+analysis_*.txt
+analyze_*.txt
+build_error.txt
+*_COMPLETE.md
+URGENT_*.md
+QUICK_TEST_*.md
