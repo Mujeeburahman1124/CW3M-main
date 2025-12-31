@@ -52,18 +52,18 @@ class AuthService {
           .doc(userCredential.user!.uid)
           .set(userModel.toMap(), SetOptions(merge: true));
       
-      log('✅ User data SAVED to Firestore successfully!');
-      log('🔍 Verify at: Firebase Console > Firestore > users > ${userCredential.user!.uid}');
+      log(' User data SAVED to Firestore successfully!');
+      log(' Verify at: Firebase Console > Firestore > users > ${userCredential.user!.uid}');
       
       return userModel;
     } on FirebaseAuthException catch (e) {
-      log('❌ Firebase Auth Error: ${e.code} - ${e.message}');
+      log(' Firebase Auth Error: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
     } on FirebaseException catch (e) {
-      log('❌ Firestore Error: ${e.code} - ${e.message}');
+      log(' Firestore Error: ${e.code} - ${e.message}');
       throw 'Failed to save user data: ${e.message}';
     } catch (e, stackTrace) {
-      log('❌ Unexpected error during sign up: $e');
+      log(' Unexpected error during sign up: $e');
       log('Stack trace: $stackTrace');
       throw 'An error occurred during sign up: $e';
     }
@@ -75,29 +75,29 @@ class AuthService {
     required String password,
   }) async {
     try {
-      log('🔐 Starting user login for: $email');
+      log(' Starting user login for: $email');
       
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      log('✅ User authenticated: ${userCredential.user!.uid}');
+      log(' User authenticated: ${userCredential.user!.uid}');
       
       // Get user data from Firestore
-      log('📖 Reading user data from Firestore...');
+      log(' Reading user data from Firestore...');
       DocumentSnapshot userDoc = await _firestore
           .collection('users')
           .doc(userCredential.user!.uid)
           .get();
 
       if (userDoc.exists) {
-        log('✅ User data found in Firestore');
+        log(' User data found in Firestore');
         final userData = userDoc.data() as Map<String, dynamic>;
         log('   - Data: $userData');
         return UserModel.fromMap(userData);
       } else {
         // User exists in Auth but not in Firestore - create the document
-        log('⚠️ User in Auth but not in Firestore. Creating user document...');
+        log(' User in Auth but not in Firestore. Creating user document...');
         UserModel userModel = UserModel.fromFirebaseUser(
           uid: userCredential.user!.uid,
           email: email,
@@ -109,18 +109,18 @@ class AuthService {
             .doc(userCredential.user!.uid)
             .set(userModel.toMap());
         
-        log('✅ User document created in Firestore');
+        log(' User document created in Firestore');
         return userModel;
       }
 
     } on FirebaseAuthException catch (e) {
-      log('❌ Firebase Auth Error during login: ${e.code} - ${e.message}');
+      log(' Firebase Auth Error during login: ${e.code} - ${e.message}');
       throw _handleAuthException(e);
     } on FirebaseException catch (e) {
-      log('❌ Firestore Error during login: ${e.code} - ${e.message}');
+      log(' Firestore Error during login: ${e.code} - ${e.message}');
       throw 'Failed to read user data: ${e.message}';
     } catch (e, stackTrace) {
-      log('❌ Unexpected error during sign in: $e');
+      log(' Unexpected error during sign in: $e');
       log('Stack trace: $stackTrace');
       throw 'An error occurred during sign in: $e';
     }
